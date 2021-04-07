@@ -1,24 +1,24 @@
-global dictory : table[addr] of set[string] = table();
+global s : table[addr] of set[string] = table();
 event http_header (c: connection, is_orig: bool, name: string, value: string)
 {
     if(name=="USER-AGENT")
     {
-            if(c$id$orig_h in dictory)
+            if(c$id$orig_h in s)
             {
-                    if(!(to_lower(value) in dictory[c$id$orig_h]))
+                    if(!(to_lower(value) in s[c$id$orig_h]))
                     {
-                            add dictory[c$id$orig_h][to_lower(value)];
+                            add s[c$id$orig_h][to_lower(value)];
                     }
             }
             else
             {
-                    dictory[c$id$orig_h]=set(to_lower(value));
+                   s[c$id$orig_h]=set(to_lower(value));
             }
     }
 }
 event zeek_done()
 {
-	for (Addr, Set in dictory)
+	for (Addr, Set in s)
 	{
 		if(|Set|>=3)
 		{
